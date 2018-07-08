@@ -122,18 +122,42 @@ function ourplan(X,Y){
 /*
  创建本方飞机
  */
-var selfplan=new ourplan(120,485);
+var dW=$('body').width();;
+var dH = $('body').height();
+var selfplan=new ourplan(dW/2-33,dH*0.75);
 //移动事件
 var ourPlan=document.getElementById('ourplan');
 var yidong=function(){
-    var oevent=window.event||arguments[0];
-    var chufa=oevent.srcElement||oevent.target;
-    var selfplanX=oevent.clientX-500;
-    var selfplanY=oevent.clientY;
-    ourPlan.style.left=selfplanX-selfplan.plansizeX/2+"px";
-    ourPlan.style.top=selfplanY-selfplan.plansizeY/2+"px";
+    // var oevent=window.event||arguments[0];
+    // var chufa=oevent.srcElement||oevent.target;
+    // var selfplanX=oevent.clientX;
+    // var selfplanY=oevent.clientY;
+    // ourPlan.style.left=selfplanX-selfplan.plansizeX/2+"px";
+    // ourPlan.style.top=selfplanY-selfplan.plansizeY/2+"px";
 //    document.getElementsByTagName('img')[0].style.left=selfplanX-selfplan.plansizeX/2+"px";
 //    document.getElementsByTagName('img')[0]..style.top=selfplanY-selfplan.plansizeY/2+"px";
+    var endTouchY = 0;
+    var endTouchX = 0;
+    ourPlan.addEventListener('touchstart',function(ev){
+        this.addEventListener('touchmove', function(ev){
+            ev.preventDefault();
+            var ev = ev.touches[0];
+            ourPlan.style.top = (ev.pageY-41)+'px';
+            ourPlan.style.left = (ev.pageX-33)+'px';
+            endTouchX = ev.pageX;
+            endTouchY = ev.pageY;
+        },false);
+        this.addEventListener('touchend', function(ev){
+            this.ontouchmove = null;
+            this.ontouchend = null;
+            var x;
+            var y;
+            x = (x>(dW-66))?(dW-66):x;
+            y = (y>(dH-82))?(dH-82):y;
+            ourPlan.style.left = x + 'px';
+            ourPlan.style.top = y + 'px';
+        },false);
+    },false);
 }
 /*
 暂停事件
@@ -143,12 +167,12 @@ var zanting=function(){
     if(number==0){
         suspenddiv.style.display="block";
         if(document.removeEventListener){
-            mainDiv.removeEventListener("mousemove",yidong,true);
-            bodyobj.removeEventListener("mousemove",bianjie,true);
+            mainDiv.removeEventListener("touchstart",yidong,true);
+            bodyobj.removeEventListener("touchstart",bianjie,true);
         }
         else if(document.detachEvent){
-            mainDiv.detachEvent("onmousemove",yidong);
-            bodyobj.detachEvent("onmousemove",bianjie);
+            mainDiv.detachEvent("ontouchstart",yidong);
+            bodyobj.detachEvent("ontouchstart",bianjie);
         }
         clearInterval(set);
         number=1;
@@ -156,12 +180,12 @@ var zanting=function(){
     else{
         suspenddiv.style.display="none";
         if(document.addEventListener){
-            mainDiv.addEventListener("mousemove",yidong,true);
-            bodyobj.addEventListener("mousemove",bianjie,true);
+            mainDiv.addEventListener("touchstart",yidong,true);
+            bodyobj.addEventListener("touchstart",bianjie,true);
         }
         else if(document.attachEvent){
-            mainDiv.attachEvent("onmousemove",yidong);
-            bodyobj.attachEvent("onmousemove",bianjie);
+            mainDiv.attachEvent("ontouchstart",yidong);
+            bodyobj.attachEvent("ontouchstart",bianjie);
         }
         set=setInterval(start,20);
         number=0;
@@ -172,20 +196,20 @@ var bianjie=function(){
     var oevent=window.event||arguments[0];
     var bodyobjX=oevent.clientX;
     var bodyobjY=oevent.clientY;
-    if(bodyobjX<505||bodyobjX>815||bodyobjY<0||bodyobjY>568){
+    if(bodyobjX<0||bodyobjX>dW||bodyobjY<0||bodyobjY>dH){
         if(document.removeEventListener){
-            mainDiv.removeEventListener("mousemove",yidong,true);
+            mainDiv.removeEventListener("touchstart",yidong,true);
         }
         else if(document.detachEvent){
-            mainDiv.detachEvent("onmousemove",yidong);
+            mainDiv.detachEvent("ontouchstart",yidong);
         }
     }
     else{
         if(document.addEventListener){
-            mainDiv.addEventListener("mousemove",yidong,true);
+            mainDiv.addEventListener("touchstart",yidong,true);
         }
         else if(document.attachEvent){
-            mainDiv.attachEvent("nomousemove",yidong);
+            mainDiv.attachEvent("notouchstart",yidong);
         }
     }
 }
@@ -198,11 +222,11 @@ var bianjie=function(){
 var bodyobj=document.getElementsByTagName("body")[0];
 if(document.addEventListener){
     //为本方飞机添加移动和暂停
-    mainDiv.addEventListener("mousemove",yidong,true);
+    mainDiv.addEventListener("click",yidong,true);
     //为本方飞机添加暂停事件
     selfplan.imagenode.addEventListener("click",zanting,true);
     //为body添加判断本方飞机移出边界事件
-    bodyobj.addEventListener("mousemove",bianjie,true);
+    bodyobj.addEventListener("touchstart",bianjie,true);
     //为暂停界面的继续按钮添加暂停事件
     suspenddiv.getElementsByTagName("button")[0].addEventListener("click",zanting,true);
 //    suspenddiv.getElementsByTagName("button")[1].addEventListener("click",chongxinkaishi,true);
@@ -211,11 +235,11 @@ if(document.addEventListener){
 }
 else if(document.attachEvent){
     //为本方飞机添加移动
-    mainDiv.attachEvent("onmousemove",yidong);
+    mainDiv.attachEvent("ontouchstart",yidong);
     //为本方飞机添加暂停事件
     selfplan.imagenode.attachEvent("onclick",zanting);
     //为body添加判断本方飞机移出边界事件
-    bodyobj.attachEvent("onmousemove",bianjie);
+    bodyobj.attachEvent("onclick",bianjie);
     //为暂停界面的继续按钮添加暂停事件
     suspenddiv.getElementsByTagName("button")[0].attachEvent("onclick",zanting);
 //    suspenddiv.getElementsByTagName("button")[1].attachEvent("click",chongxinkaishi,true);
@@ -241,8 +265,8 @@ var backgroundPositionY=0;
 开始函数
  */
 function start(){
-    mainDiv.style.backgroundPositionY=backgroundPositionY+"px";
-    backgroundPositionY+=0.5;
+    // mainDiv.style.backgroundPositionY=backgroundPositionY+"px";
+    // backgroundPositionY+=0.5;
     if(backgroundPositionY==568){
         backgroundPositionY=0;
     }
@@ -280,7 +304,7 @@ function start(){
 /*
  如果敌机超出边界,删除敌机
  */
-        if(enemys[i].imagenode.offsetTop>568){
+        if(enemys[i].imagenode.offsetTop>dH){
             mainDiv.removeChild(enemys[i].imagenode);
             enemys.splice(i,1);
             enemyslen--;
@@ -333,12 +357,12 @@ function start(){
                       enddiv.style.display="block";
                       planscore.innerHTML=scores;
                       if(document.removeEventListener){
-                          mainDiv.removeEventListener("mousemove",yidong,true);
-                          bodyobj.removeEventListener("mousemove",bianjie,true);
+                          mainDiv.removeEventListener("touchstart",yidong,true);
+                          bodyobj.removeEventListener("touchstart",bianjie,true);
                       }
                       else if(document.detachEvent){
-                          mainDiv.detachEvent("onmousemove",yidong);
-                          bodyobj.removeEventListener("mousemove",bianjie,true);
+                          mainDiv.detachEvent("ontouchstart",yidong);
+                          bodyobj.removeEventListener("touchstart",bianjie,true);
                       }
                       clearInterval(set);
                   }
